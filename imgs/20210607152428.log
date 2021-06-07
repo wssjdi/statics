@@ -1,0 +1,123 @@
+https://studygolang.com/articles/21434?fr=sidebar
+
+https://github.com/protocolbuffers/protobuf/releases
+
+go get github.com/golang/protobuf/proto
+go get github.com/golang/protobuf/protoc-gen-go
+
+go get github.com/gogo/protobuf/proto
+go get github.com/gogo/protobuf/gogoproto
+go get github.com/gogo/protobuf/protoc-gen-gogo
+go get github.com/gogo/protobuf/protoc-gen-gofast
+
+go get github.com/gogo/protobuf/jsonpb
+
+
+
+
+
+#protoc --gofast_out=. myproto.proto
+#gopath目录下执行改命令
+protoc -I=. -I=./src -I=./src/github.com/gogo/protobuf -I=./src/github.com/gogo/protobuf/protobuf --gofast_out=plugins=grpc:. ./metapb.proto
+
+#workpath下proto文件所在目录执行命令
+protoc -I=. -I=../../../vendor/github.com/gogo/protobuf -I=../../../vendor/github.com/gogo/protobuf/protobuf --gofast_out=plugins=grpc:. ./metapb.proto
+
+#protoc -I=. -I=$GOPATH/src -I=$GOPATH/src/github.com/gogo/protobuf/protobuf --gofast_out=\
+#Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types,\
+#Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
+#Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types,\
+#Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
+#Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types:. \
+#myproto.proto
+
+
+#protoc --gofast_out=. -I=.:"${GOGOPROTO_PATH}":"${GATEWAY_PB_PATH}":"D:/go_workspace/src" *.proto
+
+#protoc --gofast_out=. --proto_path=./src/github.com/gogo/protobuf --proto_path=./src/github.com/gogo/protobuf/protobuf --proto_path=./goprotobuf/metapb ./goprotobuf/metapb/*.proto
+
+#protoc --gofast_out=. --proto_path=./src/github.com/gogo/protobuf --proto_path=./src/github.com/gogo/protobuf/protobuf --proto_path=./goprotobuf --proto_path=./goprotobuf/rpcpb ./goprotobuf/rpcpb/*.proto
+
+#protoc --gofast_out=plugins=grpc:. my.proto
+
+#protoc --gofast_out=plugins=grpc,import_prefix=./goprotobuf --proto_path=./src/github.com/gogo/protobuf --proto_path=./src/github.com/gogo/protobuf/protobuf --proto_path=./goprotobuf ./goprotobuf/*.proto
+#gopath目录下执行改命令
+protoc -I=. -I=./src -I=./src/github.com/gogo/protobuf -I=./src/github.com/gogo/protobuf/protobuf --gofast_out=plugins=grpc,Mmetapb=github.com/fagongzi/gateway/pkg/pb/metapb:. rpcpb.proto
+
+#workpath下proto文件所在目录执行命令
+protoc -I=. -I=../ -I=../../../vendor/github.com/gogo/protobuf -I=../../../vendor/github.com/gogo/protobuf/protobuf --gofast_out=plugins=grpc,Mmetapb/metapb.proto=github.com/fagongzi/gateway/pkg/pb/metapb:. ./rpcpb.proto
+
+
+#Mmetapb/metapb.proto=github.com/fagongzi/gateway/pkg/pb/metapb
+
+
+$ make generate
+# Generate gogo, gRPC-Gateway, swagger, go-validators output.
+#
+# -I declares import folders, in order of importance
+# This is how proto resolves the protofile imports.
+# It will check for the protofile relative to each of these
+# folders and use the first one it finds.
+#
+# --gogo_out generates GoGo Protobuf output with gRPC plugin enabled.
+# --grpc-gateway_out generates gRPC-Gateway output.
+# --swagger_out generates an OpenAPI 2.0 specification for our gRPC-Gateway endpoints.
+# --govalidators_out generates Go validation files for our messages types, if specified.
+#
+# The lines starting with Mgoogle/... are proto import replacements,
+# which cause the generated file to import the specified packages
+# instead of the go_package's declared by the imported protof files.
+#
+# $GOPATH/src is the output directory. It is relative to the GOPATH/src directory
+# since we've specified a go_package option relative to that directory.
+#
+# proto/example.proto is the location of the protofile we use.
+protoc \
+        -I proto \
+        -I vendor/github.com/grpc-ecosystem/grpc-gateway/ \
+        -I vendor/github.com/gogo/googleapis/ \
+        -I vendor/ \
+        --gogo_out=plugins=grpc,\
+Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,\
+Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api,\
+Mgoogle/protobuf/field_mask.proto=github.com/gogo/protobuf/types:\
+$GOPATH/src/ \
+        --grpc-gateway_out=allow_patch_feature=false,\
+Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,\
+Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api,\
+Mgoogle/protobuf/field_mask.proto=github.com/gogo/protobuf/types:\
+$GOPATH/src/ \
+        --swagger_out=third_party/OpenAPI/ \
+        --govalidators_out=gogoimport=true,\
+Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,\
+Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api,\
+Mgoogle/protobuf/field_mask.proto=github.com/gogo/protobuf/types:\
+$GOPATH/src \
+        proto/example.proto
+# Workaround for https://github.com/grpc-ecosystem/grpc-gateway/issues/229.
+sed -i.bak "s/empty.Empty/types.Empty/g" proto/example.pb.gw.go && rm proto/example.pb.gw.go.bak
+# Generate static assets for OpenAPI UI
+statik -m -f -src third_party/OpenAPI/
+
+
+
+
+
+
+
+
+
+
+
+#当前路径的子目录./metapb/下执行如下命令,重新生成metapb.proto对应的go格式文件
+protoc -I=. -I=../../../vendor/github.com/gogo/protobuf -I=../../../vendor/github.com/gogo/protobuf/protobuf --gofast_out=plugins=grpc:. ./metapb.proto
+
+
+#当前路径的子目录./rpcpb/下执行如下命令,重新生成rpcpb.proto对应的go格式文件,依赖上一步生成的文件
+protoc -I=. -I=../ -I=../../../vendor/github.com/gogo/protobuf -I=../../../vendor/github.com/gogo/protobuf/protobuf --gofast_out=plugins=grpc,Mmetapb/metapb.proto=chebada.com/dubbo-go-gateway/pkg/pb/metapb:. ./rpcpb.proto
